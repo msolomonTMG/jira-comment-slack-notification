@@ -82,7 +82,8 @@ app.post('/comment-created', function(req, res) {
       commentBody = req.body.comment.body;
 
   // continue if the webhook was sent to us because an issue was commented on
-  if (webhookReason === "issue_commented") {
+  // by someone other than our GitHub Integration
+  if (webhookReason === "issue_commented" && webhookData.comment.author.displayName != "GitHub Integration") {
     // look for a user mention in the comment
     utils.getUserMentionFromComment(commentBody).then(userMentions => {
       // for each mentioned user thats signed up for this app, send slack msg

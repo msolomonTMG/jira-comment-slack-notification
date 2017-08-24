@@ -40,6 +40,9 @@ app.get('/settings', function(req, res) {
   }
   user.getBySlackUsername(req.query.slackUsername).then(thisUser => {
     console.log(thisUser)
+    if (!thisUser) {
+      res.sendStatus(403)
+    }
     res.render('settings', {
       slackUsername: thisUser.slackUsername,
       jiraUsername: utils.stripJiraMarkupFromUsername(thisUser.jiraUsername)

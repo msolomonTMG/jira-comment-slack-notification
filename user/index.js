@@ -56,10 +56,8 @@ var functions = {
       User.findOne({
         slackUsername: slackUsername
       }, function(err, user) {
-        if(err) {
-          return reject(user)
-        } else if (!user) {
-          return reject('no user')
+        if(!err) {
+          return resolve(user)
         } else {
           return reject(err)
         }

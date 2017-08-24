@@ -1,0 +1,19 @@
+{
+  "name": "jira-issue-commented-slack-notifications",
+  "version": "1.0.0",
+  "description": "get notified when someone user mentions you in a JIRA comment",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mike Solomon",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.4",
+    "express-handlebars": "^3.0.0",
+    "mongoose": "^4.11.7",
+    "request": "^2.81.0",
+    "slackbots": "^1.0.2"
+  }
+}

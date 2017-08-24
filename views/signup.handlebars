@@ -16,14 +16,26 @@
             <div class="input-group-addon">@</div>
             <input type="text" class="form-control" name="slack[username]" aria-describedby="slackUsername">
           </div>
+          <small id="slackUsernameHelp" class="form-text text-muted">The handle people use to mention you in slack. No need to type in the @ symbol</small>
         </div>
         <div class="form-group">
           <label for="jiraUsername">JIRA Username</label>
             <input type="text" class="form-control" name="jira[username]" aria-describedby="jiraUsernameHelp">
-          <small id="jiraUsernameHelp" class="form-text text-muted">Your JIRA username is not your email address</small>
+          <small id="jiraUsernameHelp" class="form-text text-muted">Your JIRA username is not your email address, it's what people use to mention you.<br>
+            <a data-toggle="collapse" href="#jiraUsernameHelpExpanded" aria-expanded="false" aria-controls="jiraUsernameHelpExpanded">
+              Show an example.
+            </a>
+          </small>
         </div>
         <button class="btn btn-primary float-right">Save</button>
       </form>
     </div>
+  </div>
+</div>
+
+<div class="collapse" id="jiraUsernameHelpExpanded">
+  <br>
+  <div class="card card-body">
+    <img src="http://i.imgur.com/uHWCH9h.gif" >
   </div>
 </div>

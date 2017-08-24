@@ -43,7 +43,7 @@ bot.on('message', function(message) {
       default:
         console.log('default is happening')
         helpers.getUsernameFromId(message.user).then(username => {
-          let response = ':wave: I can only do a few things right now. Say `settings` to adjust your settings, say `tasks` to view your open Confluence tasks, or say `signup` to signup!. I plan on getting smarter eventually!'
+          let response = ':wave: I can only do a few things right now. Say `settings` to adjust your settings or say `signup` to signup!. I plan on getting smarter eventually!'
           bot.postMessageToUser(username, response).fail(function(data) {
             //data = { ok: false, error: 'user_not_found' }
             console.log(data)

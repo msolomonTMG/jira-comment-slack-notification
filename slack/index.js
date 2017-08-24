@@ -1,5 +1,6 @@
 const
   SlackBot = require('slackbots'),
+  user = require('../user'),
   APP_URL = process.env.APP_URL || `http://localhost:5000/`;
 
 var bot = new SlackBot({

@@ -53,7 +53,19 @@ bot.on('message', function(message) {
   }
 });
 
-
+var helpers = {
+  getUsernameFromId: function(id) {
+    return new Promise(function(resolve, reject) {
+      bot.getUsers().then(data => {
+        data.members.forEach((user, index) => {
+          if (user.id == id) {
+            return resolve(user.name)
+          }
+        })
+      })
+    });
+  }
+}
 
 var functions = {
   sendSettingsToUser: function(user) {

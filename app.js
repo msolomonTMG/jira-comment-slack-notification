@@ -85,7 +85,7 @@ app.post('/comment-created', function(req, res) {
   // by someone other than our GitHub Integration
   if (webhookReason === "issue_commented" && webhookData.comment.author.displayName != "GitHub Integration") {
     // look for a user mention in the comment
-    utils.getUserMentionFromComment(commentBody).then(userMentions => {
+    utils.getUserMentionsFromComment(commentBody).then(userMentions => {
       // for each mentioned user thats signed up for this app, send slack msg
       userMentions.forEach(userMention => {
         // find if there is a user with that jira username in this app's DB

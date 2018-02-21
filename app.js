@@ -77,13 +77,13 @@ app.post('/msg-wake-up', function(req, res) {
 })
 
 app.post('/comment-created', function(req, res) {
-  let webhookReason = req.body.issue_event_type_name,
+  let webhookReason = req.body.webhookEvent,
       webhookData = req.body,
       commentBody = req.body.comment.body;
 
   // continue if the webhook was sent to us because an issue was commented on
   // by someone other than our GitHub Integration
-  if (webhookReason === "issue_commented" && webhookData.comment.author.displayName != "GitHub Integration") {
+  if (webhookReason === "comment_created" && webhookData.comment.author.displayName != "GitHub Integration") {
     // look for a user mention in the comment
     utils.getUserMentionsFromComment(commentBody).then(userMentions => {
       // for each mentioned user thats signed up for this app, send slack msg

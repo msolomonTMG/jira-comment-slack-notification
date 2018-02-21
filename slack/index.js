@@ -99,18 +99,8 @@ var functions = {
             short: true
           },
           {
-            title: "Reporter",
-            value: `${issue.fields.creator.displayName}`,
-            short: true
-          },
-          {
             title: "Status",
             value: `${issue.fields.status.name}`,
-            short: true
-          },
-          {
-            title: "Story Points",
-            value: `${issue.fields.customfield_10021}`,
             short: true
           },
           {

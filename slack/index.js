@@ -77,6 +77,7 @@ var functions = {
     })
   },
   sendCommentToUser: function(slackUsername, jiraData) {
+    console.log(jiraData)
     return new Promise(function(resolve, reject) {
       let
         jiraUrl = jiraData.issue.self.split('/rest/api')[0],

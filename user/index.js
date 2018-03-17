@@ -3,8 +3,10 @@ var
   utils = require('../utils');
 
 var userSchema = new mongoose.Schema({
+  slackUsername: String,
   jiraUsername: String,
-  slackUsername: String
+  jiraToken: String,
+  jiraTokenSecret: String
 });
 
 var User = mongoose.model('Users', userSchema);
@@ -21,8 +23,10 @@ var functions = {
         })
       } else {
         newUser = new User ({
+          slackUsername: userObj.slackUsername,
           jiraUsername: utils.addJiraMarkupToUsername(userObj.jiraUsername),
-          slackUsername: userObj.slackUsername
+          jiraToken: userObj.jiraToken,
+          jiraTokenSecret: userObj.jiraTokenSecret
         });
         newUser.save(function (err, user) {
           if (err) {
@@ -55,6 +59,21 @@ var functions = {
 
       User.findOne({
         slackUsername: slackUsername
+      }, function(err, user) {
+        if(!err) {
+          return resolve(user)
+        } else {
+          return reject(err)
+        }
+      })
+
+    });
+  },
+  getBySlackUserId: function(slackUserId) {
+    return new Promise(function(resolve, reject) {
+
+      User.findOne({
+        slackUserId: slackUserId
       }, function(err, user) {
         if(!err) {
           return resolve(user)

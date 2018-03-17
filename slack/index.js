@@ -3,8 +3,16 @@ const
   user = require('../user'),
   APP_URL = process.env.APP_URL || `http://localhost:5000/`;
 
+let slackBotToken;
+
+if (APP_URL == 'http://localhost:5000/') {
+  slackBotToken = process.env.SLACKBOT_TOKEN_DEV
+} else {
+  slackBotToken = process.env.SLACKBOT_TOKEN
+}
+
 var bot = new SlackBot({
-  token: process.env.SLACKBOT_TOKEN,
+  token: slackBotToken,
   name: 'JIRA'
 });
 
@@ -13,6 +21,38 @@ bot.on('message', function(message) {
   if (message.type == 'message' && message.user != null) {
     console.log('got a message', message)
     switch(message.text) {
+      case 'test':
+        helpers.getUsernameFromId(message.user).then(username => {
+          user.getBySlackUsername(username).then(thisUser => {
+            if(!thisUser) {
+              bot.postMessageToUser(username, 'you gotta sign up first!')
+            } else {
+              let params = {}
+
+              let text = `:speech_balloon: mentioned you in a JIRA comment.`
+
+              let attachments = [{
+                fallback: "Respond without leaving Slack",
+                callback_id: "respond_to_comment",
+                attachment_type: "default",
+                actions: [{
+                  name: "respond",
+                  style: "primary",
+                  text: "Respond from Slack",
+                  type: "button",
+                  value: "respond"
+                }]
+              }]
+
+              params.attachments = JSON.stringify(attachments)
+
+              bot.postMessageToUser(username, 'youre one signed up bro', params, function(data) {
+                return resolve(data)
+              })
+            }
+          })
+        })
+      break;
       case 'settings':
         helpers.getUsernameFromId(message.user).then(username => {
           user.getBySlackUsername(username).then(user => {

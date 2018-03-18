@@ -133,8 +133,11 @@ app.get('/auth/atlassian-oauth/callback',
     passport.authenticate('atlassian-oauth', { failureRedirect:'/fail' }),
     function (req, res) {
       console.log('req')
+      console.log(req)
       console.log("ATLASSIAN AUTH CALLBACK")
-      console.log(req.session)
+      if (req.session.passport.user.jiraToken && req.session.passport.user.jiraTokenSecret) {
+        slack.sendMessageToUser(req.session.passport.user.slackUsername, `Nice work, you're all set`)
+      }
       res.redirect('/?success=true');
     })
 

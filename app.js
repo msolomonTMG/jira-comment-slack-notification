@@ -14,7 +14,7 @@ const
   mongoose = require('mongoose'),
   APP_URL = process.env.APP_URL || `http://localhost:5000/`,
   JIRA_URL = process.env.JIRA_URL,
-  MONGO_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/mongo_test";
+  MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/mongo_test";
 
 mongoose.connect(MONGO_URI, function (err, res) {
   if (err) {

@@ -1,6 +1,8 @@
 const
+  request = require('request'),
   SlackBot = require('slackbots'),
   user = require('../user'),
+  slackOauthToken = process.env.SLACK_OAUTH_TOKEN,
   APP_URL = process.env.APP_URL || `http://localhost:5000/`;
 
 let slackBotToken;
@@ -13,7 +15,7 @@ if (APP_URL == 'http://localhost:5000/') {
 
 var bot = new SlackBot({
   token: slackBotToken,
-  name: 'JIRA'
+  name: 'Jira'
 });
 
 bot.on('message', function(message) {
@@ -129,6 +131,43 @@ var helpers = {
 }
 
 var functions = {
+  openCommentDialog: function(payload) {
+    return new Promise(function(resolve, reject) {
+      
+      let dialog = {
+        callback_id: "create_comment",
+        title: "Respond to Comment",
+        submit_label: "Comment",
+        elements: [
+          {
+            label: "Comment",
+            name: "description",
+            type: "textarea",
+            optional: false
+          }
+        ]
+      }
+
+      let urlEncodedDialog = encodeURIComponent(JSON.stringify(dialog))
+      console.log(payload)
+      let options = {
+        method: 'post',
+        json: true,
+        url: `https://slack.com/api/dialog.open?token=${slackBotToken}&trigger_id=${payload.trigger_id}&dialog=${urlEncodedDialog}`
+      }
+      
+      request(options, function(err, res, body) {
+        if (err) {
+          console.error('error posting json: ', err)
+          return reject(err)
+        } else {
+          console.log('popped create ticket dialog')
+          console.log(body)
+          return resolve(true)
+        }
+      })
+    });
+  },
   sendSettingsToUser: function(user) {
     return new Promise(function(resolve, reject) {
       bot.postMessageToUser(user.slackUsername, `:hammer_and_wrench: <${APP_URL}settings?slackUsername=${user.slackUsername}| Click here> to adjust your settings`, function(data) {

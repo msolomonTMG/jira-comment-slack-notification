@@ -17,7 +17,7 @@
     "mongoose": "^4.11.7",
     "passport": "^0.4.0",
     "passport-atlassian-oauth": "0.0.2",
-    "request": "^2.81.0",
-    "slackbots": "^1.0.2"
+    "request": "^2.85.0",
+    "slackbots": "^1.1.0"
   }
 }

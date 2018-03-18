@@ -203,16 +203,13 @@ app.post('/response-from-slack', function(req, res) {
           slack.sendSettingsToUser(thisUser)
         } else if (!thisUser.jiraToken || !thisUser.jiraTokenSecret) {
           
-          
+          console.log('no tokens!!')
+          // this shouldnt happen because we pop auth buttons instead
+          // of popping respond to comment buttons if no tokens
           
         } else {
-          jira.createTicket(thisUser, {
-            project: 'MIKETEST',
-            summary: 'testing summary',
-            description: 'testing description'
-          }).then(ticket => {
-            console.log(ticket)
-            res.send('Nice work!!')
+          slack.openCommentDialog(payload).then(success => {
+            console.log(success)
           })
         }
 

@@ -14,7 +14,9 @@ const
   mongoose = require('mongoose'),
   APP_URL = process.env.APP_URL || `http://localhost:5000/`,
   JIRA_URL = process.env.JIRA_URL,
-  MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/mongo_test";
+  MONGO_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/mongo_test";
+
+let privateKey = Buffer.from(process.env.RSA_PRIVATE_KEY, 'base64').toString();
 
 mongoose.connect(MONGO_URI, function (err, res) {
   if (err) {
@@ -35,6 +37,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
 
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
@@ -48,8 +58,8 @@ passport.use(new AtlassianOAuthStrategy({
   applicationURL: `${JIRA_URL}`,
   callbackURL:`${APP_URL}auth/atlassian-oauth/callback`,
   passReqToCallback: true,
-  consumerKey:"neptune-the-doodle",
-  consumerSecret:process.env.RSA_PRIVATE_KEY
+  consumerKey:"neptune-the-dodle",
+  consumerSecret:privateKey
 }, function(req, token, tokenSecret, profile, done) {
     console.log('HELLO')
     process.nextTick(function() {
@@ -57,29 +67,40 @@ passport.use(new AtlassianOAuthStrategy({
       console.log(tokenSecret)
       console.log(req.session.slackUsername)
 
-      user.create({
-        slackUsername: req.session.slackUsername,
-        slackUserId: req.session.slackUserId,
-        jiraToken: token,
-        jiraUsername: profile.username,
-        jiraTokenSecret: tokenSecret
-      }).then(createdUser => {
-        return done(null, createdUser)
+      // check if this user is just adding a jira token
+      // or if they are a brand new user
+      user.getBySlackUsername(req.session.slackUsername).then(thisUser => {
+        if (!thisUser) {
+          user.create({
+            slackUsername: req.session.slackUsername,
+            slackUserId: req.session.slackUserId,
+            jiraToken: token,
+            jiraUsername: profile.username,
+            jiraTokenSecret: tokenSecret
+          }).then(createdUser => {
+            return done(null, createdUser)
+          })
+        } else {
+          console.log('updating user')
+          user.getBySlackUsername(req.session.slackUsername).then(thisUser => {
+            user.update(thisUser._id, {
+              jiraToken: token,
+              jiraTokenSecret: tokenSecret
+            }).then(updatedUser => {
+              console.log(updatedUser)
+              return done(null, updatedUser)
+            })
+          })
+        }
       })
+      
     })
   }
 ));
 
-passport.serializeUser(function(user, done) {
-  done(null, user);
-});
-
-passport.deserializeUser(function(user, done) {
-  done(null, user);
-});
-
 app.get('/auth', function(req, res) {
   console.log('AUTH')
+  console.log(privateKey)
   user.getBySlackUsername(req.query.slackUsername)
     .then(thisUser => {
       if (thisUser) {
@@ -111,9 +132,10 @@ app.get('/auth/atlassian-oauth',
 app.get('/auth/atlassian-oauth/callback',
     passport.authenticate('atlassian-oauth', { failureRedirect:'/fail' }),
     function (req, res) {
+      console.log('req')
       console.log("ATLASSIAN AUTH CALLBACK")
       console.log(req.session)
-        res.redirect('/?success=true');
+      res.redirect('/?success=true');
     })
 
 app.get('/auth/atlassian-oauth/authorize', function(req, res) {
@@ -122,6 +144,24 @@ app.get('/auth/atlassian-oauth/authorize', function(req, res) {
   res.sendStatus(200)
 })
 
+app.get('/delete', function(req, res) {  
+  user.deleteMike().then(success => {
+    res.send(success)
+  })
+})
+
+
+app.get('/', function(req, res) {
+
+  if (req.query.success) {
+    res.render('message', {
+      successMsg: 'You can now receive and respond to Jira comments from within Slack!'
+    })
+  } else {
+    res.render('home')
+  }
+
+})
 
 app.get('/settings', function(req, res) {
   if (!req.query.slackUsername) {
@@ -142,6 +182,7 @@ app.get('/settings', function(req, res) {
 })
 
 app.post('/response-from-slack', function(req, res) {
+  console.log(req.body)
   if (req.body.challenge) {
     res.send(req.body.challenge)
   } else if (req.body.payload) {
@@ -154,14 +195,23 @@ app.post('/response-from-slack', function(req, res) {
       console.log(payload.user.name)
       user.getBySlackUsername(payload.user.name).then(thisUser => {
         console.log(thisUser)
-        jira.createTicket(thisUser, {
-          project: 'MIKETEST',
-          summary: 'testing summary',
-          description: 'testing description'
-        }).then(ticket => {
-          console.log(ticket)
-          res.send('Nice work!!')
-        })
+        if (!thisUser) {
+          console.log('there is no user')
+          slack.sendSettingsToUser(thisUser)
+        } else if (!thisUser.jiraToken || !thisUser.jiraTokenSecret) {
+          
+          
+          
+        } else {
+          jira.createTicket(thisUser, {
+            project: 'MIKETEST',
+            summary: 'testing summary',
+            description: 'testing description'
+          }).then(ticket => {
+            console.log(ticket)
+            res.send('Nice work!!')
+          })
+        }
 
         //slack.popDialog(thisUser)
 

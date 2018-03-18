@@ -4,21 +4,21 @@ const
   JIRA_URL = process.env.JIRA_URL || 'https://nowthis.atlassian.net',
   OAuth = require('oauth').OAuth;
 
-let privateKey;
-if (APP_URL == 'http://localhost:5000/') {
-  let fs = require('fs')
-  privateKey = fs.readFileSync('./privkey.pem', 'utf8')
-  privateKey = privateKey.toString()
-} else {
-  privateKey = process.env.RSA_PRIVATE_KEY
-}
+let privateKey = Buffer.from(process.env.RSA_PRIVATE_KEY, 'base64').toString();
+// if (APP_URL == 'http://localhost:5000/') {
+//   let fs = require('fs')
+//   privateKey = fs.readFileSync('./rsa-key.pem', 'utf8')
+//   privateKey = privateKey.toString()
+// } else {
+//   privateKey = process.env.RSA_PRIVATE_KEY
+// }
 
 //TODO: use jira_url here
 var consumer =
   new OAuth(`${JIRA_URL}/plugins/servlet/oauth/request-token`,
                   `${JIRA_URL}/plugins/servlet/oauth/access-token`,
-                  'neptune-the-doodle',
-                  process.env.RSA_PRIVATE_KEY,
+                  'neptune-the-dodle',
+                  privateKey,
                   "1.0",
                   `${APP_URL}auth/atlassian-oauth/callback`,
                   "RSA-SHA1",

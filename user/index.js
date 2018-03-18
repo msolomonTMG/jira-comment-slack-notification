@@ -12,6 +12,39 @@ var userSchema = new mongoose.Schema({
 var User = mongoose.model('Users', userSchema);
 
 var functions = {
+  deleteMike: function() {
+    return new Promise(function(resolve, reject) {
+      User.remove({
+        slackUsername: 'mike'
+      },function(success) {
+        return resolve(success)
+      })
+    });
+  },
+  update: function(mongoId, updates) {
+    console.log('I AM UPDATING USER ' + mongoId)
+    return new Promise(function(resolve, reject) {
+      User.update(
+        { _id: mongoId },
+        { $set: updates },
+        function(err, result) {
+          if (err) {
+            return reject(err);
+          } else {
+            User.findOne({
+              _id: mongoId
+            }, function(err, user) {
+              if(!err) {
+                return resolve(user)
+              } else {
+                return reject(err)
+              }
+            })
+          }
+        }
+      );
+    })
+  },
   create: function(userObj) {
     return new Promise(function (resolve, reject) {
 

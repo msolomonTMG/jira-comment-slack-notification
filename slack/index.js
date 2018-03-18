@@ -25,7 +25,27 @@ bot.on('message', function(message) {
         helpers.getUsernameFromId(message.user).then(username => {
           user.getBySlackUsername(username).then(thisUser => {
             if(!thisUser) {
-              bot.postMessageToUser(username, 'you gotta sign up first!')
+              bot.postMessageToUser(username, `:chipmunk: Slow down, Eager McBeaver! You need to signup first. Signup by <${APP_URL}signup|clicking here>`)
+            } else if (!thisUser.jiraToken || !thisUser.jiraTokenSecret) {
+              let params = {}
+
+              let attachments = [{
+                text: `To respond within Slack, you must first Auth with Jira`,
+                fallback: "Auth with Jira",
+                callback_id: "auth_with_jira",
+                attachment_type: "default",
+                actions: [{
+                  text: "Auth with Jira",
+                  type: "button",
+                  url: `${APP_URL}auth?slackUsername=${username}&slackUserId=${message.user}`
+                }]
+              }]
+
+              params.attachments = JSON.stringify(attachments)
+
+              bot.postMessageToUser(username, 'youre one signed up bro', params, function(data) {
+                return resolve(data)
+              })
             } else {
               let params = {}
 
@@ -115,6 +135,15 @@ var functions = {
         return resolve(data)
       })
     })
+  },
+  sendMessageToUser: function(slackUsername, message) {
+    return new Promise(function(resolve, reject) {
+      
+      bot.postMessageToUser(slackUsername, message, function(data) {
+        return resolve(data)
+      })
+      
+    });
   },
   sendCommentToUser: function(slackUsername, jiraData) {
     console.log(jiraData)

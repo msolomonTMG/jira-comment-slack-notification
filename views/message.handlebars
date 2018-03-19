@@ -1,0 +1,16 @@
+<div class="container" style="padding-top:50px">
+  <div class="row">
+    <div class="col-sm-12 col-md-6 offset-md-3">
+      {{#if error}}
+        <div class="alert alert-danger" role="alert">
+          <strong>Oh snap!</strong> {{error.msg}}
+        </div>
+      {{/if}}
+      {{#if successMsg}}
+        <div class="alert alert-success" role="alert">
+          <strong>All good!</strong> {{successMsg}}
+        </div>
+      {{/if}}
+    </div>
+  </div>
+</div>

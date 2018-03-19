@@ -48,27 +48,19 @@ var functions = {
   create: function(userObj) {
     return new Promise(function (resolve, reject) {
 
-      if (!userObj.jiraUsername || !userObj.slackUsername) {
-        return reject({
-          error: {
-            msg: 'User must have jira username, slack username set'
-          }
-        })
-      } else {
-        newUser = new User ({
-          slackUsername: userObj.slackUsername,
-          jiraUsername: utils.addJiraMarkupToUsername(userObj.jiraUsername),
-          jiraToken: userObj.jiraToken,
-          jiraTokenSecret: userObj.jiraTokenSecret
-        });
-        newUser.save(function (err, user) {
-          if (err) {
-            return reject(err)
-          } else {
-            return resolve(user)
-          }
-        });
-      }
+      newUser = new User ({
+        slackUsername: userObj.slackUsername
+        // jiraUsername: utils.addJiraMarkupToUsername(userObj.jiraUsername),
+        // jiraToken: userObj.jiraToken,
+        // jiraTokenSecret: userObj.jiraTokenSecret
+      });
+      newUser.save(function (err, user) {
+        if (err) {
+          return reject(err)
+        } else {
+          return resolve(user)
+        }
+      });
 
     })
   },
@@ -89,10 +81,12 @@ var functions = {
   },
   getBySlackUsername: function(slackUsername) {
     return new Promise(function(resolve, reject) {
-
+      console.log("GETTING USER")
       User.findOne({
         slackUsername: slackUsername
       }, function(err, user) {
+        console.log("ERROR" + err)
+        console.log("USER" + user)
         if(!err) {
           return resolve(user)
         } else {

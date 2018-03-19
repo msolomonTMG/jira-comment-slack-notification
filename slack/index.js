@@ -27,7 +27,7 @@ bot.on('message', function(message) {
         helpers.getUsernameFromId(message.user).then(username => {
           user.getBySlackUsername(username).then(thisUser => {
             if(!thisUser) {
-              bot.postMessageToUser(username, `:chipmunk: Slow down, Eager McBeaver! You need to signup first. Signup by <${APP_URL}signup|clicking here>`)
+              bot.postMessageToUser(username, `:chipmunk: Slow down, Eager McBeaver! You need to signup first. Signup by <${APP_URL}user/create?slackUsername=${username}|clicking here>`)
             } else if (!thisUser.jiraToken || !thisUser.jiraTokenSecret) {
               let params = {}
 
@@ -79,7 +79,7 @@ bot.on('message', function(message) {
         helpers.getUsernameFromId(message.user).then(username => {
           user.getBySlackUsername(username).then(user => {
             if (!user) {
-              bot.postMessageToUser(username, `:chipmunk: Slow down, Eager McBeaver! You need to signup first. Signup by <${APP_URL}signup|clicking here>`)
+              bot.postMessageToUser(username, `:chipmunk: Slow down, Eager McBeaver! You need to signup first. Signup by <${APP_URL}user/create?slackUsername=${username}|clicking here>`)
             } else {
               functions.sendSettingsToUser(user) //we need the user to send random string query param
             }
@@ -97,7 +97,7 @@ bot.on('message', function(message) {
               })
             } else {
               console.log('no user')
-              bot.postMessageToUser(username, `Signup by <${APP_URL}signup|clicking here>`)
+              bot.postMessageToUser(username, `Signup by <${APP_URL}user/create?slackUsername=${username}|clicking here>`)
             }
 
           })

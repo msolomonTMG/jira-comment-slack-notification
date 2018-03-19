@@ -73,7 +73,6 @@ passport.use(new AtlassianOAuthStrategy({
         if (!thisUser) {
           user.create({
             slackUsername: req.session.slackUsername,
-            slackUserId: req.session.slackUserId,
             jiraToken: token,
             jiraUsername: profile.username,
             jiraTokenSecret: tokenSecret
@@ -85,7 +84,8 @@ passport.use(new AtlassianOAuthStrategy({
           user.getBySlackUsername(req.session.slackUsername).then(thisUser => {
             user.update(thisUser._id, {
               jiraToken: token,
-              jiraTokenSecret: tokenSecret
+              jiraTokenSecret: tokenSecret,
+              jiraUsername: utils.addJiraMarkupToUsername(profile.username)
             }).then(updatedUser => {
               console.log(updatedUser)
               return done(null, updatedUser)
@@ -106,7 +106,6 @@ app.get('/auth', function(req, res) {
       if (thisUser) {
         // save slack username to session to use when saving user after auth
         req.session.slackUsername = req.query.slackUsername
-        req.session.slackUserId = req.query.slackUserId
         // send to auth route
         res.redirect('/auth/atlassian-oauth')
 
@@ -243,6 +242,25 @@ app.post('/response-from-slack', function(req, res) {
     //
     // })
 
+})
+
+app.get('/user/create', function(req, res) {
+  user.getBySlackUsername(req.query.slackUsername).then(thisUser => {
+    if(thisUser == null) {
+      user.create({
+        slackUsername: req.query.slackUsername
+      }).then(createdUser => {
+        console.log('CREATED A USER')
+        console.log(createdUser)
+        res.redirect(`/auth?slackUsername=${createdUser.slackUsername}`)
+      })
+    } else {
+      console.log('there is a user')
+      console.log(thisUser)
+    }
+  }).catch(err => {
+    console.log(err)
+  })
 })
 
 app.post('/user/create', function(req, res) {

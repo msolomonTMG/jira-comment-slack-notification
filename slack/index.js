@@ -15,7 +15,7 @@ if (APP_URL == 'http://localhost:5000/') {
 
 var bot = new SlackBot({
   token: slackBotToken,
-  name: 'Jira'
+  name: 'Jira Comment Bot'
 });
 
 bot.on('message', function(message) {
@@ -55,7 +55,7 @@ bot.on('message', function(message) {
 
               let attachments = [{
                 fallback: "Respond without leaving Slack",
-                callback_id: "respond_to_comment",
+                callback_id: "pop_comment_dialog",
                 attachment_type: "default",
                 actions: [{
                   name: "respond",
@@ -133,16 +133,19 @@ var helpers = {
 var functions = {
   openCommentDialog: function(payload) {
     return new Promise(function(resolve, reject) {
+      let issueKey = payload.actions[0].value.split('|')[0]
+      let commentCreator = payload.actions[0].value.split('|')[1]
       
       let dialog = {
-        callback_id: "create_comment",
+        callback_id: `create_comment|${issueKey}`,
         title: "Respond to Comment",
         submit_label: "Comment",
         elements: [
           {
             label: "Comment",
-            name: "description",
+            name: "comment",
             type: "textarea",
+            value: `[~${commentCreator}] `,
             optional: false
           }
         ]
@@ -217,6 +220,18 @@ var functions = {
             short: false
           }
         ]
+      },
+      {
+        fallback: "Respond without leaving Slack",
+        callback_id: "pop_comment_dialog",
+        attachment_type: "default",
+        actions: [{
+          name: "respond",
+          style: "primary",
+          text: "Respond from Slack",
+          type: "button",
+          value: `${issue.key}|${comment.author.key}`
+        }]
       }]
 
       params.attachments = JSON.stringify(attachments)

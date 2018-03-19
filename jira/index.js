@@ -52,6 +52,20 @@ var helpers = {
 }
 
 var functions = {
+  createComment: function(user, issueKey, comment) {
+    return new Promise(function(resolve, reject) {
+      console.log(`Issue key is: ${issueKey}`)
+      let url = `${JIRA_URL}/rest/api/2/issue/${issueKey}/comment`
+      let data = JSON.stringify({
+        body: comment
+      })
+      
+      helpers.makeJiraRequest(user, url, 'post', data).then(success => {
+        return resolve(success)
+      })
+      
+    });
+  },
   getTicketInfo: function(user, url) {
     return new Promise(function(resolve, reject) {
 

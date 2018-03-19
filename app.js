@@ -194,7 +194,7 @@ app.post('/response-from-slack', function(req, res) {
     console.log("PAYLOAD")
     console.log(payload)
 
-    if (payload.callback_id == 'respond_to_comment') {
+    if (payload.callback_id == 'pop_comment_dialog') {
       console.log(payload.user.name)
       user.getBySlackUsername(payload.user.name).then(thisUser => {
         console.log(thisUser)
@@ -215,6 +215,23 @@ app.post('/response-from-slack', function(req, res) {
 
         //slack.popDialog(thisUser)
 
+      })
+    } else if (payload.callback_id.match(/create_comment/)) {
+      user.getBySlackUsername(payload.user.name).then(thisUser => {
+        console.log(thisUser)
+        console.log(payload)
+        console.log(payload.callback_id)
+        let issueKey = payload.callback_id.split('|')[1]
+        let comment = payload.submission.comment
+        
+        jira.createComment(thisUser, issueKey, comment).then(success => {
+          console.log('SUCCESS')
+          console.log(success)
+          // slack will post OK in the channel if you just return 200
+          slack.sendMessageToUser(thisUser.slackUsername, 'Your comment has been made in Jira')
+          res.setHeader('Content-Type', 'application/json');
+          res.status(200).send()
+        })
       })
     }
 

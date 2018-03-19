@@ -226,7 +226,7 @@ var functions = {
       // send the user an Auth with Jira button if they did not do so already
       if (!thisUser.jiraToken || !thisUser.jiraTokenSecret) {
         attachments.push({
-          text: `Great news! You can now respond to Jira comments within Slack! To do so, you must first Auth with Jira`,
+          text: `:wave: Great news! You can now respond to Jira comments within Slack! To do so, you must first Auth with Jira`,
           fallback: "Auth with Jira",
           callback_id: "auth_with_jira",
           attachment_type: "default",

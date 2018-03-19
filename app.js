@@ -135,7 +135,7 @@ app.get('/auth/atlassian-oauth/callback',
       console.log(req)
       console.log("ATLASSIAN AUTH CALLBACK")
       if (req.session.passport.user.jiraToken && req.session.passport.user.jiraTokenSecret) {
-        slack.sendMessageToUser(req.session.passport.user.slackUsername, `Nice work, you're all set`)
+        slack.sendMessageToUser(req.session.passport.user.slackUsername, `:+1: Nice work, you're all set. Going forward, you'll have the option to respond to Jira comments from here!`)
       }
       res.redirect('/?success=true');
     })
@@ -149,6 +149,14 @@ app.get('/auth/atlassian-oauth/authorize', function(req, res) {
 app.get('/delete', function(req, res) {  
   user.deleteMike().then(success => {
     res.send(success)
+  })
+})
+
+app.get('/deleteToken', function(req, res) {
+  user.deleteMikeToken().then(success => {
+    res.send({success})
+  }).catch(err => {
+    res.send({err})
   })
 })
 

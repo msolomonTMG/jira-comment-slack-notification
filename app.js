@@ -227,7 +227,7 @@ app.post('/response-from-slack', function(req, res) {
           console.log('SUCCESS')
           console.log(success)
           // slack will post OK in the channel if you just return 200
-          slack.sendMessageToUser(thisUser.slackUsername, 'Your comment has been made in Jira')
+          slack.sendMessageToUser(thisUser.slackUsername, ':white_check_mark: Your comment has been made in Jira')
           res.setHeader('Content-Type', 'application/json');
           res.status(200).send()
         })

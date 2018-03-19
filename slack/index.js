@@ -187,8 +187,9 @@ var functions = {
       
     });
   },
-  sendCommentToUser: function(slackUsername, jiraData) {
+  sendCommentToUser: function(thisUser, jiraData) {
     console.log(jiraData)
+    console.log(thisUser)
     return new Promise(function(resolve, reject) {
       let
         jiraUrl = jiraData.issue.self.split('/rest/api')[0],
@@ -220,23 +221,38 @@ var functions = {
             short: false
           }
         ]
-      },
-      {
-        fallback: "Respond without leaving Slack",
-        callback_id: "pop_comment_dialog",
-        attachment_type: "default",
-        actions: [{
-          name: "respond",
-          style: "primary",
-          text: "Respond from Slack",
-          type: "button",
-          value: `${issue.key}|${comment.author.key}`
-        }]
       }]
-
+      
+      // send the user an Auth with Jira button if they did not do so already
+      if (!thisUser.jiraToken || !thisUser.jiraTokenSecret) {
+        attachments.push({
+          text: `Great news! You can now respond to Jira comments within Slack! To do so, you must first Auth with Jira`,
+          fallback: "Auth with Jira",
+          callback_id: "auth_with_jira",
+          attachment_type: "default",
+          actions: [{
+            text: ":lock: Auth with Jira",
+            type: "button",
+            url: `${APP_URL}auth?slackUsername=${thisUser.slackUsername}`
+          }]
+        })
+      } else {
+        attachments.push({
+          fallback: "Respond without leaving Slack",
+          callback_id: "pop_comment_dialog",
+          attachment_type: "default",
+          actions: [{
+            name: "respond",
+            style: "primary",
+            text: "Respond from Slack",
+            type: "button",
+            value: `${issue.key}|${comment.author.key}`
+          }]
+        })
+      }
       params.attachments = JSON.stringify(attachments)
 
-      bot.postMessageToUser(slackUsername, text, params, function(data) {
+      bot.postMessageToUser(thisUser.slackUsername, text, params, function(data) {
         return resolve(data)
       })
     });

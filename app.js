@@ -286,7 +286,7 @@ app.post('/comment-created', function(req, res) {
         // find if there is a user with that jira username in this app's DB
         user.getByJiraUsername(userMention).then((thisUser, index) => {
           // send a slack message to the user
-          slack.sendCommentToUser(thisUser.slackUsername, webhookData).then(result => {
+          slack.sendCommentToUser(thisUser, webhookData).then(result => {
             // if this is the last user to msg, send 200 status
             if (userMentions.length === index + 1) {
               res.sendStatus(200)

@@ -204,7 +204,9 @@ app.post('/response-from-slack', function(req, res) {
       // give slack a response right away
       res.setHeader('Content-Type', 'application/json')
       res.status(200).send({
-        replace_original: false
+        "replace_original": false,
+        "response_type": "ephemeral",
+        "text": "Responding..."
       })
       console.log(payload.user.name)
       user.getBySlackUsername(payload.user.name).then(thisUser => {

@@ -202,7 +202,9 @@ app.post('/response-from-slack', function(req, res) {
 
     if (payload.callback_id == 'pop_comment_dialog') {
       // give slack a response right away
-      res.status(200).send({})
+      res.status(200).send(JSON.stringify({
+        replace_original: false
+      }))
       console.log(payload.user.name)
       user.getBySlackUsername(payload.user.name).then(thisUser => {
         console.log(thisUser)

@@ -8,6 +8,9 @@
   },
   "author": "Mike Solomon",
   "license": "MIT",
+  "engines": {
+    "node": "6.6.0"
+  },
   "dependencies": {
     "body-parser": "^1.17.2",
     "express": "^4.15.4",

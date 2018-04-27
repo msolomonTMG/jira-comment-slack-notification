@@ -2,19 +2,10 @@ const
   request = require('request'),
   SlackBot = require('slackbots'),
   user = require('../user'),
-  slackOauthToken = process.env.SLACK_OAUTH_TOKEN,
-  APP_URL = process.env.APP_URL || `http://localhost:5000/`;
-
-let slackBotToken;
-
-if (APP_URL == 'http://localhost:5000/') {
-  slackBotToken = process.env.SLACKBOT_TOKEN_DEV
-} else {
-  slackBotToken = process.env.SLACKBOT_TOKEN
-}
+  settings = require('../settings.js');
 
 var bot = new SlackBot({
-  token: slackBotToken,
+  token: settings.slackBotToken,
   name: 'Jira Comment Bot'
 });
 
@@ -27,7 +18,7 @@ bot.on('message', function(message) {
         helpers.getUsernameFromId(message.user).then(username => {
           user.getBySlackUsername(username).then(thisUser => {
             if(!thisUser) {
-              bot.postMessageToUser(username, `:chipmunk: Slow down, Eager McBeaver! You need to signup first. Signup by <${APP_URL}user/create?slackUsername=${username}|clicking here>`)
+              bot.postMessageToUser(username, `:chipmunk: Slow down, Eager McBeaver! You need to signup first. Signup by <${settings.APP_URL}user/create?slackUsername=${username}|clicking here>`)
             } else if (!thisUser.jiraToken || !thisUser.jiraTokenSecret) {
               let params = {}
 
@@ -39,7 +30,7 @@ bot.on('message', function(message) {
                 actions: [{
                   text: "Auth with Jira",
                   type: "button",
-                  url: `${APP_URL}auth?slackUsername=${username}&slackUserId=${message.user}`
+                  url: `${settings.APP_URL}auth?slackUsername=${username}&slackUserId=${message.user}`
                 }]
               }]
 
@@ -79,7 +70,7 @@ bot.on('message', function(message) {
         helpers.getUsernameFromId(message.user).then(username => {
           user.getBySlackUsername(username).then(user => {
             if (!user) {
-              bot.postMessageToUser(username, `:chipmunk: Slow down, Eager McBeaver! You need to signup first. Signup by <${APP_URL}user/create?slackUsername=${username}|clicking here>`)
+              bot.postMessageToUser(username, `:chipmunk: Slow down, Eager McBeaver! You need to signup first. Signup by <${settings.APP_URL}user/create?slackUsername=${username}|clicking here>`)
             } else {
               functions.sendSettingsToUser(user) //we need the user to send random string query param
             }
@@ -97,7 +88,7 @@ bot.on('message', function(message) {
               })
             } else {
               console.log('no user')
-              bot.postMessageToUser(username, `Signup by <${APP_URL}user/create?slackUsername=${username}|clicking here>`)
+              bot.postMessageToUser(username, `Signup by <${settings.APP_URL}user/create?slackUsername=${username}|clicking here>`)
             }
 
           })
@@ -135,7 +126,7 @@ var functions = {
     return new Promise(function(resolve, reject) {
       let issueKey = payload.actions[0].value.split('|')[0]
       let commentCreator = payload.actions[0].value.split('|')[1]
-      
+
       let dialog = {
         callback_id: `create_comment|${issueKey}`,
         title: "Respond to Comment",
@@ -156,9 +147,9 @@ var functions = {
       let options = {
         method: 'post',
         json: true,
-        url: `https://slack.com/api/dialog.open?token=${slackBotToken}&trigger_id=${payload.trigger_id}&dialog=${urlEncodedDialog}`
+        url: `https://slack.com/api/dialog.open?token=${settings.slackBotToken}&trigger_id=${payload.trigger_id}&dialog=${urlEncodedDialog}`
       }
-      
+
       request(options, function(err, res, body) {
         if (err) {
           console.error('error posting json: ', err)
@@ -173,18 +164,18 @@ var functions = {
   },
   sendSettingsToUser: function(user) {
     return new Promise(function(resolve, reject) {
-      bot.postMessageToUser(user.slackUsername, `:hammer_and_wrench: <${APP_URL}settings?slackUsername=${user.slackUsername}| Click here> to adjust your settings`, function(data) {
+      bot.postMessageToUser(user.slackUsername, `:hammer_and_wrench: <${settings.APP_URL}settings?slackUsername=${user.slackUsername}| Click here> to adjust your settings`, function(data) {
         return resolve(data)
       })
     })
   },
   sendMessageToUser: function(slackUsername, message) {
     return new Promise(function(resolve, reject) {
-      
+
       bot.postMessageToUser(slackUsername, message, function(data) {
         return resolve(data)
       })
-      
+
     });
   },
   sendCommentToUser: function(thisUser, jiraData) {
@@ -222,7 +213,7 @@ var functions = {
           }
         ]
       }]
-      
+
       // send the user an Auth with Jira button if they did not do so already
       if (!thisUser.jiraToken || !thisUser.jiraTokenSecret) {
         attachments.push({
@@ -233,7 +224,7 @@ var functions = {
           actions: [{
             text: ":lock: Auth with Jira",
             type: "button",
-            url: `${APP_URL}auth?slackUsername=${thisUser.slackUsername}`
+            url: `${settings.APP_URL}auth?slackUsername=${thisUser.slackUsername}`
           }]
         })
       } else {

@@ -3,6 +3,7 @@ const
   express = require('express'),
   exphbs = require('express-handlebars'),
   bodyParser = require('body-parser'),
+  path = require('path'),
   slack = require('./slack'),
   user = require('./user'),
   jira = require('./jira'),
@@ -11,22 +12,20 @@ const
   AtlassianOAuthStrategy = require('passport-atlassian-oauth').Strategy,
   request = require('request'),
   mongoose = require('mongoose'),
-  APP_URL = process.env.APP_URL || `http://localhost:5000/`,
-  JIRA_URL = process.env.JIRA_URL,
-  MONGO_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/mongo_test";
+  settings = require('./settings.js');
 
 let privateKey = Buffer.from(process.env.RSA_PRIVATE_KEY, 'base64').toString();
 
-mongoose.connect(MONGO_URI, function (err, res) {
+mongoose.connect(settings.MONGO_URI, function (err, res) {
   if (err) {
-  console.log ('ERROR connecting to: ' + MONGO_URI + '. ' + err);
+  console.log ('ERROR connecting to: ' + settings.MONGO_URI + '. ' + err);
   } else {
-  console.log ('Succeeded connected to: ' + MONGO_URI);
+  console.log ('Succeeded connected to: ' + settings.MONGO_URI);
   }
 });
 
 var app = express();
-app.set('port', process.env.PORT || 5000);
+app.set('port', settings.PORT);
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -46,6 +45,7 @@ passport.deserializeUser(function(user, done) {
 
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
+app.set('views', path.join(__dirname, '/views'));
 
 app.get('/signup', function(req, res) {
   res.render('signup');
@@ -54,8 +54,8 @@ app.get('/signup', function(req, res) {
 // passport setup for atlassian
 // called from route: /auth/atlassian-oauth
 passport.use(new AtlassianOAuthStrategy({
-  applicationURL: `${JIRA_URL}`,
-  callbackURL:`${APP_URL}auth/atlassian-oauth/callback`,
+  applicationURL: `${settings.JIRA_URL}`,
+  callbackURL:`${settings.APP_URL}auth/atlassian-oauth/callback`,
   passReqToCallback: true,
   consumerKey:"neptune-the-dodle",
   consumerSecret:privateKey
@@ -92,7 +92,7 @@ passport.use(new AtlassianOAuthStrategy({
           })
         }
       })
-      
+
     })
   }
 ));
@@ -145,7 +145,7 @@ app.get('/auth/atlassian-oauth/authorize', function(req, res) {
   res.sendStatus(200)
 })
 
-app.get('/delete', function(req, res) {  
+app.get('/delete', function(req, res) {
   user.deleteMike().then(success => {
     res.send(success)
   })
@@ -215,11 +215,11 @@ app.post('/response-from-slack', function(req, res) {
           console.log('there is no user')
           slack.sendSettingsToUser(thisUser)
         } else if (!thisUser.jiraToken || !thisUser.jiraTokenSecret) {
-          
+
           console.log('no tokens!!')
           // this shouldnt happen because we pop auth buttons instead
           // of popping respond to comment buttons if no tokens
-          
+
         } else {
           slack.openCommentDialog(payload).then(success => {
             console.log(success)
@@ -236,7 +236,7 @@ app.post('/response-from-slack', function(req, res) {
         console.log(payload.callback_id)
         let issueKey = payload.callback_id.split('|')[1]
         let comment = payload.submission.comment
-        
+
         jira.createComment(thisUser, issueKey, comment).then(success => {
           console.log('SUCCESS')
           console.log(success)

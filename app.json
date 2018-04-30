@@ -1,5 +1,5 @@
 {
-  "name": "Slack Notifications for Jira Comment Mentions",
+  "name": "Slack DM for Jira Comments",
   "description": "Get a DM in slack when someone @ mentions you in a Jira comment",
   "repository": "https://github.com/msolomonTMG/jira-comment-slack-notification",
   "logo": "https://i.imgur.com/fk1OMEO.png",

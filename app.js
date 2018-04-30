@@ -145,21 +145,6 @@ app.get('/auth/atlassian-oauth/authorize', function(req, res) {
   res.sendStatus(200)
 })
 
-app.get('/delete', function(req, res) {  
-  user.deleteMike().then(success => {
-    res.send(success)
-  })
-})
-
-app.get('/deleteToken', function(req, res) {
-  user.deleteMikeToken().then(success => {
-    res.send({success})
-  }).catch(err => {
-    res.send({err})
-  })
-})
-
-
 app.get('/', function(req, res) {
 
   if (req.query.success) {

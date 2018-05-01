@@ -4,7 +4,10 @@ var
 
 var userSchema = new mongoose.Schema({
   slackUsername: String,
-  jiraUsername: String,
+  jiraUsername: {
+      type: String,
+      lowercase: true
+  },
   jiraToken: String,
   jiraTokenSecret: String
 });

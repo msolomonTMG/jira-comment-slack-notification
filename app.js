@@ -92,7 +92,7 @@ passport.use(new AtlassianOAuthStrategy({
           })
         }
       })
-      
+
     })
   }
 ));
@@ -200,11 +200,11 @@ app.post('/response-from-slack', function(req, res) {
           console.log('there is no user')
           slack.sendSettingsToUser(thisUser)
         } else if (!thisUser.jiraToken || !thisUser.jiraTokenSecret) {
-          
+
           console.log('no tokens!!')
           // this shouldnt happen because we pop auth buttons instead
           // of popping respond to comment buttons if no tokens
-          
+
         } else {
           slack.openCommentDialog(payload).then(success => {
             console.log(success)
@@ -221,7 +221,7 @@ app.post('/response-from-slack', function(req, res) {
         console.log(payload.callback_id)
         let issueKey = payload.callback_id.split('|')[1]
         let comment = payload.submission.comment
-        
+
         jira.createComment(thisUser, issueKey, comment).then(success => {
           console.log('SUCCESS')
           console.log(success)
@@ -302,8 +302,9 @@ app.post('/comment-created', function(req, res) {
       userMentions.forEach(userMention => {
         // find if there is a user with that jira username in this app's DB
         user.getByJiraUsername(userMention).then((thisUser, index) => {
+          const lowerUserMention = userMention.toLowerCase();
           // send a slack message to the user
-          slack.sendCommentToUser(thisUser, webhookData).then(result => {
+          slack.sendCommentToUser(lowerUserMention, webhookData).then(result => {
             // if this is the last user to msg, send 200 status
             if (userMentions.length === index + 1) {
               res.sendStatus(200)

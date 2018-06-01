@@ -5,6 +5,9 @@
   "logo": "https://i.imgur.com/fk1OMEO.png",
   "keywords": ["node", "express", "jira", "slack"],
   "env": {
+    "APP_URL": {
+      "description": "https://YOUR-APP-NAME.herokuapp.com/"
+    },
     "JIRA_URL": {
       "description": "The base URL of your Jira instance: https://example.atlassian.net"
     },

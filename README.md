@@ -37,17 +37,35 @@ To setup this application you'll need:
   - Enter the URL of your heroku app and click "Create New Link" (if you get a "no response" error, just click Continue)
     
     - Application Name = whatever you'd like, or just use "Jira Comments in Slack"  
-    - Display Url = your Heroku app URL
-    - Request Token URL, Access Token URL, and Authorize URL = https://YOUR-HEROKU-APP-NAME.herokuapp.com/auth/atlassian-oauth
-    - Consumer Key = "neptune-the-dodle"
-5. **Add Features to Slack App**
-  - Go back the Slack Application that you setup in step 1 and go to "Interactive Components" on the left-side navigation
+    - Application Type = Generic Application  
+    - Service Provider Name = whatever you'd like  
+    - Consumer Key = "neptune-the-dodle"  
+    - Shared Secret = base64 encoded privatekey from step 2 
+    - Request Token URL, Access Token URL, and Authorize URL = https://YOUR-HEROKU-APP-NAME.herokuapp.com/auth/atlassian-oauth  
+    - Click "Continue"  
+  - Click the Edit button next to your newly created apllication link in the list  
+  - Go to the Incoming Authentication section in the modal  
+    - Consumer Key = "neptune-the-dodle"  
+    - Consumer Name =  whatever you'd like users to see when they auth with Jira ("Jira Comment Bot" could work)  
+    - Description = optional description of what this app does  
+    - Public Key = copy and paste the contents of pubkey.pem from step 2
+    - Consumer Callback URL = https://YOUR-HEROKU-APP-NAME.herokuapp.com/auth/atlassian-oauth/callback/
+5. **Setup Jira Webhook for Comments**
+  - Go to https://YOUR-JIRA-SUBDOMAIN.atlassian.net/plugins/servlet/webhooks
+  - Click "Create a Webhook"
+    - Name = whatever you want ("Jira Comment Bot" could work)
+    - Status = enabled
+    - URL = https://YOUR-HEROKU-APP-NAME.herokuapp.com/comment-created
+    - Check off "created" in the Comment section
+    - Scroll down and click "Create"
+6. **Add Features to Slack App**
+  - Go back the Slack Application that you setup in step 1 (https://api.slack.com/apps, select your app from the list) and go to "Interactive Components" on the left-side navigation
     - Enter "https://YOUR-HEROKU-APP-NAME.herokuapp.com/response-from-slack" in the "Request URL" field & save
   - Go to "Event Subscriptions" in the "Request URL" field enter, https://YOUR-HEROKU-APP-NAME.herokuapp.com/msg-wake-up
-    - Subscribe to the message.im event
-6. **Sign Up**
+    - Subscribe to the message.im event in the "Subscribe to Workspace Events" section
+7. **Sign Up**
   - Sign up by messaging the bot you created with the word "signup" -- click the link that the bot responds with to Auth with Jira
-7. **Usage**
+8. **Usage**
   - @mention your username in a Jira comment to get a message in Slack
   
 ## Development

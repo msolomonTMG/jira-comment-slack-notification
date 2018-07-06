@@ -4,6 +4,9 @@
 Read about how Group Nine created an application that sends us direct messages in Slack when we get mentioned in Jira comments: https://medium.com/group-nine-media-product-team/slack-notifications-for-jira-comments-1d57879bc149
 
 ## Setup Instructions
+[![Step-by-Step video](https://img.youtube.com/vi/5X4-3rkkffo/0.jpg)](https://www.youtube.com/watch?v=5X4-3rkkffo)  
+*step by step video on YouTube*
+
 To setup this application you'll need:
 - A Heroku account
 - Admin access to your Slack instance

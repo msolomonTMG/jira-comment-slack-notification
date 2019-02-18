@@ -3,6 +3,19 @@
 ## What is this App?
 Read about how Group Nine created an application that sends us direct messages in Slack when we get mentioned in Jira comments: https://medium.com/group-nine-media-product-team/slack-notifications-for-jira-comments-1d57879bc149
 
+## Getting notifications up and running for a user
+1. Make sure the user you are setting up has both a Slack and a Jira account created and is logged in on both.
+1. As the new user, in slack scroll down on the side menu and click the `+` button next to `Apps`.
+1. Select the `Jira Comment Bot` from the list of apps
+1. Once added, in the new channel for `jira_comment_bot` type: `signup`.
+1. This will prompt the bot to respond with a signup link. Click the link to open a new page. (**Note**: make sure your browser has your jira account in it's cookies as we use this to authenticate.)
+1. The page will hang, this is okay and a known bug. Wait 30 seconds before closing the page.
+1. Now as an Admin user, sign in to the hosted heroku app and navigate to the mongodb hosted instance on `mlab`
+1. In the `mlab` database delete the newly created user.
+1. Once the new user is deleted notifiy the new user to click the `signup` link again.
+1. This time it should prompt the new user with an oauth screen. Accept the and signin.
+1. That's it! The new user should be all setup with the jira comment bot and should receive notifications when @mentioned.
+
 ## Setup Instructions
 [![Step-by-Step video](https://img.youtube.com/vi/5X4-3rkkffo/0.jpg)](https://www.youtube.com/watch?v=5X4-3rkkffo)  
 *step by step video on YouTube*

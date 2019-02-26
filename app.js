@@ -256,6 +256,7 @@ app.get('/user/create', function(req, res) {
     } else {
       console.log('there is a user')
       console.log(thisUser)
+      res.redirect(`/auth?slackUsername=${thisUser.slackUsername}`)
     }
   }).catch(err => {
     console.log(err)

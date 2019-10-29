@@ -18,7 +18,7 @@
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.6",
     "fs": "0.0.1-security",
-    "mongoose": "^4.11.7",
+    "mongoose": "^5.7.5",
     "passport": "^0.4.0",
     "passport-atlassian-oauth": "0.0.2",
     "request": "^2.85.0",
